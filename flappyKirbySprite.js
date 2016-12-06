@@ -5,6 +5,8 @@
 var kirbySprite;
 var backgroundSprite;
 var foregroundSprite;
+var topBlockSprite;
+var bottomBlockSprite;
 
 function Sprite(img, x, y, width, height) {
     this.img = img;
@@ -24,6 +26,9 @@ function initSprites(img){
         new Sprite(img, 200, 190, 49, 48),
         new Sprite(img, 254, 71, 37, 39)
     ];
+
+    topBlockSprite = new Sprite(img, 442, 18, 38, 266);
+    bottomBlockSprite = new Sprite(img, 442, 18, 38, 266);
 
     backgroundSprite = [
         new Sprite(img, 387, 336, 173, 93),

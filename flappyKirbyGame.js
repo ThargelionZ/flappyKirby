@@ -10,8 +10,101 @@ var width;
 var height;
 var states = {Splash: 0, Game: 1, Score: 2};
 var currentState;
+var score = 0;
+
+var blocks;
 
 var foregroundPosition = 0;
+
+function blockCollection() {
+    this._blocks = [];
+
+    /**
+     * Empty blocks array
+     */
+    this.reset = function () {
+        this._blocks = [];
+    };
+
+    /**
+     * Creates and adds a new block to the game.
+     */
+    this.add = function () {
+        this._blocks.push(new Block()); // Create and push block to array
+    };
+
+    /**
+     * Update the position of existing blocks and add new blocks when necessary.
+     */
+    this.update = function () {
+        if (frames % 100 === 0) { // Add a new block to the game every 100 frames.
+            this.add();
+        }
+
+        for (var i = 0, len = this._blocks.length; i < len; i++) { // Iterate through the array of blocks and update each.
+            var block = this._blocks[i]; // The current block.
+
+            if (i === 0) { // If this is the leftmost block, it is the only block that the fish can collide with . . .
+                block.detectCollision(); // . . . so, determine if the fish has collided with this leftmost block.
+            }
+
+            block.x -= 3.2; // Each frame, move each block two pixels to the left. Higher/lower values change the movement speed.
+            if (block.x < -block.width) { // If the block has moved off screen . . .
+                this._blocks.splice(i, 1); // . . . remove it.
+                i--;
+                len--;
+                score++;
+                console.log(score);
+            }
+            // SOMEWHERE ADD THE SCORE UP
+        }
+    };
+
+    /**
+     * Draw all blocks to canvas context.
+     */
+    this.draw = function () {
+        for (var i = 0, len = this._blocks.length; i < len; i++) {
+            var block = this._blocks[i];
+            block.draw();
+        }
+    };
+}
+
+function Block() {
+    this.x = 500;
+    this.y = height - (bottomBlockSprite.height + foregroundSprite.height + 110 + 200 * Math.random()); // change numbers 200 everywhere
+    this.width = bottomBlockSprite.width;
+    this.height = bottomBlockSprite.height;
+
+    /**
+     * Determines if the fish has collided with the block.
+     * Calculates x/y difference and use normal vector length calculation to determine
+     */
+    this.detectCollision = function () {
+        // intersection
+        var cx = Math.min(Math.max(kirby.x, this.x), this.x + this.width);
+        var cy1 = Math.min(Math.max(kirby.y, this.y), this.y + this.height);
+        var cy2 = Math.min(Math.max(kirby.y, this.y + this.height + 110), this.y + 2 * this.height); // Change numbers 200 everywhere
+        // Closest difference
+        var dx = kirby.x - cx;
+        var dy1 = kirby.y - cy1;
+        var dy2 = kirby.y - cy2;
+        // Vector length
+        var d1 = dx * dx + dy1 * dy1;
+        var d2 = dx * dx + dy2 * dy2;
+        var r = kirby.radius * kirby.radius;
+        // Determine intersection
+        if (r > d1 || r > d2) {
+            currentState = states.Score;
+        }
+    };
+
+    this.draw = function () {
+        bottomBlockSprite.draw(renderingContext, this.x, this.y);
+        topBlockSprite.draw(renderingContext, this.x, this.y + 110 + this.height); // change numbers 200 everywhere
+    };
+}
 
 function Kirby() {
     this.frame = 0;
@@ -95,6 +188,7 @@ function main() {
     document.body.appendChild(canvas);
 
     kirby = new Kirby();
+    blocks = new blockCollection();
 }
 
 function windowSetUp() {
@@ -130,6 +224,7 @@ function onMouseDown(evt) {
 function canvasSetUp() {
     canvas = document.createElement("canvas");
 
+    canvas.setAttribute("id", "myCanvas");
     canvas.style.border = "1px solid #382b1d";
 
     canvas.width = width;
@@ -162,7 +257,11 @@ function update() {
     kirby.update();
 
     if(currentState !== states.Score) {
-        foregroundPosition = (foregroundPosition - 3) % 27; /// Move left two px each frame. Wrap every 14px.
+        foregroundPosition = (foregroundPosition - 3) % 27; /// Move left two px each frame. Wrap every 27px.
+    }
+
+    if(currentState === states.Game){
+        blocks.update();
     }
 
     // console.log(frames);
@@ -177,6 +276,7 @@ function render() {
     //backgroundSprite[2].draw(renderingContext, 150, height - backgroundSprite[2].height - 60);
 
     kirby.draw(renderingContext);
+    blocks.draw(renderingContext);
 
     // drawing foreground
 
