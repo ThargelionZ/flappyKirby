@@ -11,6 +11,13 @@ var height;
 var states = {Splash: 0, Game: 1, Score: 2};
 var currentState;
 var score = 0;
+var highScore = Number(localStorage.getItem("highScore"));
+var passed = true;
+
+$("#scores").append("<h2 id='highScore'>High Score: " + highScore + " </h2>");
+
+
+var okButton;
 
 var blocks;
 
@@ -37,15 +44,30 @@ function blockCollection() {
      * Update the position of existing blocks and add new blocks when necessary.
      */
     this.update = function () {
-        if (frames % 100 === 0) { // Add a new block to the game every 100 frames.
+        if (frames % 100 === 0) { // Add a new block to the game every 100 frames. CHANGE THIS NUMBER!!!!!
             this.add();
+            passed = true;
         }
 
         for (var i = 0, len = this._blocks.length; i < len; i++) { // Iterate through the array of blocks and update each.
             var block = this._blocks[i]; // The current block.
 
+
+
             if (i === 0) { // If this is the leftmost block, it is the only block that the fish can collide with . . .
                 block.detectCollision(); // . . . so, determine if the fish has collided with this leftmost block.
+                if(block.x < kirby.x){
+                    if(passed){
+                        passed = false;
+                        score++;
+                        document.getElementById("score").innerHTML = "Score: " + score;
+                        if(score > highScore){
+                            highScore = score;
+                            document.getElementById("highScore").innerHTML = "High Score: " + highScore;
+                            localStorage.setItem("highScore", highScore);
+                        }
+                    }
+                }
             }
 
             block.x -= 3.2; // Each frame, move each block two pixels to the left. Higher/lower values change the movement speed.
@@ -53,10 +75,7 @@ function blockCollection() {
                 this._blocks.splice(i, 1); // . . . remove it.
                 i--;
                 len--;
-                score++;
-                console.log(score);
             }
-            // SOMEWHERE ADD THE SCORE UP
         }
     };
 
@@ -73,7 +92,7 @@ function blockCollection() {
 
 function Block() {
     this.x = 500;
-    this.y = height - (bottomBlockSprite.height + foregroundSprite.height + 110 + 200 * Math.random()); // change numbers 200 everywhere
+    this.y = height - (bottomBlockSprite.height + foregroundSprite.height + 80 + 200 * Math.random()); // change numbers 200 everywhere
     this.width = bottomBlockSprite.width;
     this.height = bottomBlockSprite.height;
 
@@ -85,7 +104,7 @@ function Block() {
         // intersection
         var cx = Math.min(Math.max(kirby.x, this.x), this.x + this.width);
         var cy1 = Math.min(Math.max(kirby.y, this.y), this.y + this.height);
-        var cy2 = Math.min(Math.max(kirby.y, this.y + this.height + 110), this.y + 2 * this.height); // Change numbers 200 everywhere
+        var cy2 = Math.min(Math.max(kirby.y, this.y + this.height + 80), this.y + 2 * this.height); // Change numbers 200 everywhere
         // Closest difference
         var dx = kirby.x - cx;
         var dy1 = kirby.y - cy1;
@@ -102,7 +121,7 @@ function Block() {
 
     this.draw = function () {
         bottomBlockSprite.draw(renderingContext, this.x, this.y);
-        topBlockSprite.draw(renderingContext, this.x, this.y + 110 + this.height); // change numbers 200 everywhere
+        topBlockSprite.draw(renderingContext, this.x, this.y + 80 + this.height); // change numbers 200 everywhere
     };
 }
 
@@ -112,7 +131,7 @@ function Kirby() {
     this.x = 150;
     this.y = 50;
     this.rotation = 0;
-    this.radius = 12;
+    this.radius = 11;
     this.velocity = 0;
 
     this.gravity = 0.25;
@@ -150,6 +169,10 @@ function Kirby() {
                 currentState = states.Score;
             }
             this.velocity = this._jump;
+        }
+
+        if(this.y <= 0){
+            this.y = 0;
         }
 
         if(this.velocity >= this._jump){
@@ -217,6 +240,23 @@ function onMouseDown(evt) {
             kirby.jump();
             break;
         case states.Score:
+            var mouseX = evt.offsetX, mouseY = evt.offsetY;
+
+            if (mouseX == null || mouseY == null) {
+                mouseX = evt.touches[0].clientX;
+                mouseY = evt.touches[0].clientY;
+            }
+
+            // Check if within the okButton
+            if (okButton.x < mouseX && mouseX < okButton.x + okButton.width &&
+                okButton.y < mouseY && mouseY < okButton.y + okButton.height
+            ) {
+                //console.log('click');
+                blocks.reset();
+                currentState = states.Splash;
+                score = 0;
+                document.getElementById("score").innerHTML = "Score: 0";
+            }
             break;
     }
 }
@@ -240,6 +280,14 @@ function loadGraphics() {
     img.onload = function() {
         initSprites(this);
         renderingContext.fillStyle = "#8BE4FD";
+
+        okButton = {
+            x: (width - okButtonSprite.width) / 2,
+            y: height - 200,
+            width: okButtonSprite.width,
+            height: okButtonSprite.height
+        };
+
         // NOT NECESSARY kirbySprite[0].draw(renderingContext, 50, 50);
         gameLoop()
     };
@@ -271,12 +319,20 @@ function render() {
     renderingContext.fillRect(0, 0, width, height);
 
     // Draw background sprites
+    backgroundSprite[2].draw(renderingContext, backgroundSprite[1].width - 7, height - backgroundSprite[2].height - 60);
+    backgroundSprite[2].draw(renderingContext, 0, height - backgroundSprite[2].height - 60);
+    backgroundSprite[2].draw(renderingContext, width - backgroundSprite[2].width, height - backgroundSprite[2].height - 60);
     backgroundSprite[0].draw(renderingContext, 0, height - backgroundSprite[0].height - 60);
     backgroundSprite[1].draw(renderingContext, width - backgroundSprite[1].width, height - backgroundSprite[1].height - 60);
-    //backgroundSprite[2].draw(renderingContext, 150, height - backgroundSprite[2].height - 60);
 
-    kirby.draw(renderingContext);
+
+
     blocks.draw(renderingContext);
+    kirby.draw(renderingContext);
+
+    if (currentState === states.Score) {
+        okButtonSprite.draw(renderingContext, okButton.x, okButton.y);
+    }
 
     // drawing foreground
 

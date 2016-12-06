@@ -7,6 +7,7 @@ var backgroundSprite;
 var foregroundSprite;
 var topBlockSprite;
 var bottomBlockSprite;
+var okButtonSprite;
 
 function Sprite(img, x, y, width, height) {
     this.img = img;
@@ -27,14 +28,16 @@ function initSprites(img){
         new Sprite(img, 254, 71, 37, 39)
     ];
 
-    topBlockSprite = new Sprite(img, 442, 18, 38, 266);
-    bottomBlockSprite = new Sprite(img, 442, 18, 38, 266);
+    topBlockSprite = new Sprite(img, 441, 19, 38, 270);
+    bottomBlockSprite = new Sprite(img, 441, 19, 38, 270);
 
     backgroundSprite = [
-        new Sprite(img, 387, 336, 173, 93),
+        new Sprite(img, 387, 336, 171, 93),
         new Sprite(img, 559, 336, 170, 93),
         new Sprite(img, 327, 299, 55, 119)
     ];
+
+    okButtonSprite = new Sprite(img, 507, 255, 82, 29);
 
     foregroundSprite = new Sprite(img, 48, 586, 144, 76);
 }// X 48 W 146
