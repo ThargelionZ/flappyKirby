@@ -8,6 +8,7 @@ var foregroundSprite;
 var topBlockSprite;
 var bottomBlockSprite;
 var okButtonSprite;
+var tapInstructionsSprite;
 
 function Sprite(img, x, y, width, height) {
     this.img = img;
@@ -38,6 +39,8 @@ function initSprites(img){
     ];
 
     okButtonSprite = new Sprite(img, 507, 255, 82, 29);
+
+    tapInstructionsSprite = new Sprite(img, 608, 214, 94, 74);
 
     foregroundSprite = new Sprite(img, 48, 586, 144, 76);
 }// X 48 W 146

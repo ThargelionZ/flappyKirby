@@ -10,7 +10,7 @@ var width;
 var height;
 var states = {Splash: 0, Game: 1, Score: 2};
 var currentState;
-var score = 0;
+var score = 99;
 var highScore = Number(localStorage.getItem("highScore"));
 var passed = true;
 
@@ -18,6 +18,7 @@ $("#scores").append("<h2 id='highScore'>High Score: " + highScore + " </h2>");
 
 var greenGreens = document.getElementById("greenGreens");
 var grunt = document.getElementById("grunt");
+var scoreIncrease = document.getElementById("scoreIncrease");
 
 var okButton;
 
@@ -82,7 +83,9 @@ function blockCollection() {
                         passed = false;
                         score++;
                         document.getElementById("score").innerHTML = "Score: " + score;
-
+                        if(muted == false){
+                            scoreIncrease.play();
+                        }
                         function getRandomColor() {
                             var letters = '0123456789ABCDEF';
                             var color = '#';
@@ -397,4 +400,8 @@ function render() {
     foregroundSprite.draw(renderingContext, foregroundPosition, height - foregroundSprite.height);
     foregroundSprite.draw(renderingContext, foregroundPosition + foregroundSprite.width, height - foregroundSprite.height);
     foregroundSprite.draw(renderingContext, foregroundPosition + (foregroundSprite.width * 2), height - foregroundSprite.height);
+
+    if (currentState === states.Splash) {
+        tapInstructionsSprite.draw(renderingContext, tapInstructionsSprite.width + 33, height - tapInstructionsSprite.height - 140);
+    }
 }
