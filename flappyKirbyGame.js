@@ -16,12 +16,33 @@ var passed = true;
 
 $("#scores").append("<h2 id='highScore'>High Score: " + highScore + " </h2>");
 
+var greenGreens = document.getElementById("greenGreens");
+var grunt = document.getElementById("grunt");
 
 var okButton;
 
 var blocks;
 
 var foregroundPosition = 0;
+
+var muted = false;
+
+function mute() {
+    if(muted == false){
+        muted = true;
+        greenGreens.pause();
+        $("#unmute").remove();
+        $("#scores").prepend("<i id='mute' class='fa fa-volume-off fa-2x' aria-hidden='true' onclick='mute()'></i>");
+    } else {
+        muted = false;
+        if(currentState !== states.Score){
+            greenGreens.load();
+        }
+        $("#mute").remove();
+        $("#scores").prepend("<i id='unmute' class='fa fa-volume-up fa-2x' aria-hidden='true' onclick='mute()'></i>");
+    }
+
+}
 
 function blockCollection() {
     this._blocks = [];
@@ -61,6 +82,31 @@ function blockCollection() {
                         passed = false;
                         score++;
                         document.getElementById("score").innerHTML = "Score: " + score;
+
+                        function getRandomColor() {
+                            var letters = '0123456789ABCDEF';
+                            var color = '#';
+                            for (var i = 0; i < 6; i++ ) {
+                                color += letters[Math.floor(Math.random() * 16)];
+                            }
+                            return color;
+                        }
+
+                        var randomColor = getRandomColor();
+
+                        if(score < 10){
+                            renderingContext.fillStyle = "#8BE4FD";
+                        }
+                        else if(score % 10 == 0 && score !== 0){
+                            renderingContext.fillStyle = randomColor;
+                        }
+                        else if(score >= 100){
+                            renderingContext.fillStyle = randomColor;
+                        }
+                        else {
+
+                        }
+
                         if(score > highScore){
                             highScore = score;
                             document.getElementById("highScore").innerHTML = "High Score: " + highScore;
@@ -116,6 +162,10 @@ function Block() {
         // Determine intersection
         if (r > d1 || r > d2) {
             currentState = states.Score;
+            greenGreens.pause();
+            if(muted == false){
+                grunt.play();
+            }
         }
     };
 
@@ -167,6 +217,10 @@ function Kirby() {
             this.y = height - foregroundSprite.height - 10;
             if(currentState === states.Game){
                 currentState = states.Score;
+                greenGreens.pause();
+                if(muted == false){
+                    grunt.play();
+                }
             }
             this.velocity = this._jump;
         }
@@ -256,6 +310,10 @@ function onMouseDown(evt) {
                 currentState = states.Splash;
                 score = 0;
                 document.getElementById("score").innerHTML = "Score: 0";
+                renderingContext.fillStyle = "#8BE4FD";
+                if(muted == false){
+                    greenGreens.load();
+                }
             }
             break;
     }

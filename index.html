@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="icon" href="images/kirby.png">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>Flappy Kirby!</title>
     <style>
@@ -20,7 +21,7 @@
             display: block;
             position: absolute;
             margin: auto;
-            margin-top: 180px;
+            margin-top: 230px;
             top: 0;
             bottom: 0;
             left: 0;
@@ -42,17 +43,30 @@
             width: 380px;
             margin: 0 auto;
         }
+
+        i {
+            cursor: pointer;
+        }
+
+
     </style>
 </head>
 <body onload="main()">
     <h1>Flappy Kirby!</h1>
     <div id="scores">
+        <i id="unmute" class="fa fa-volume-up fa-2x" aria-hidden="true" onclick="mute()"></i>
         <h2 id="score">Score: 0</h2>
+
     </div>
-    <!--<audio controls autoplay loop>-->
-        <!--<source src="audio/Green%20Greens%20-%20Kirby%20Super%20Star.mp3" type="audio/mp3">-->
-        <!--Your browser does not support the audio element.-->
-    <!--</audio>-->
+
+    <audio id="greenGreens" controls autoplay loop>
+        <source src="audio/02-green-greens.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="grunt" controls>
+        <source src="audio/kirbyGrunt.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="flappyKirbySprite.js"></script>
     <script src="flappyKirbyGame.js"></script>
