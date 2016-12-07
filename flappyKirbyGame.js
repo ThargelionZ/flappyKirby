@@ -10,7 +10,7 @@ var width;
 var height;
 var states = {Splash: 0, Game: 1, Score: 2};
 var currentState;
-var score = 99;
+var score = 0;
 var highScore = Number(localStorage.getItem("highScore"));
 var passed = true;
 
