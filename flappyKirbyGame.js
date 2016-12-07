@@ -10,9 +10,11 @@ var width;
 var height;
 var states = {Splash: 0, Game: 1, Score: 2};
 var currentState;
-var score = 0;
+var score = 100;
 var highScore = Number(localStorage.getItem("highScore"));
 var passed = true;
+
+var canvasDocument;
 
 $("#scores").append("<h2 id='highScore'>High Score: " + highScore + " </h2>");
 
@@ -284,7 +286,10 @@ function windowSetUp() {
 
     // Create a listener on the input event.
 
-    document.addEventListener(inputEvent, onMouseDown);
+    setTimeout(function () {
+        document.getElementById("myCanvas").addEventListener(inputEvent, onMouseDown);
+    }, 5);
+
 }
 
 function onMouseDown(evt) {
